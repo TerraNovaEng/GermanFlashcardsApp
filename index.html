@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>German Vocabulary Game</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; }
+        /* Side-by-side layout for the game */
+        .game-container { display: flex; justify-content: center; gap: 50px; margin-top: 20px; }
+        .col { display: flex; flex-direction: column; gap: 10px; width: 200px; }
+        button { padding: 10px; cursor: pointer; border: 1px solid #999; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <h1>Matching Word Game</h1>
+    
+    <div class="game-container">
+        <div id="german-col" class="col"></div>
+        <div id="english-col" class="col"></div>
+    </div>
+
+    <script>
+        let vocabData = [];
+
+        fetch('data.json')
+            .then(r => r.json())
+            .then(data => {
+                vocabData = data.vocabulary;
+                startMatchingGame(vocabData);
+            });
+
+        function startMatchingGame(vocab) {
+            const gameSet = vocab.sort(() => 0.5 - Math.random()).slice(0, 5);
+            const germanCol = document.getElementById('german-col');
+            const englishCol = document.getElementById('english-col');
+
+            gameSet.forEach(item => {
+                const btn = document.createElement('button');
+                btn.innerText = item.german;
+                btn.onclick = () => handleSelection('german', item.english, btn);
+                germanCol.appendChild(btn);
+            });
+
+            const shuffledEnglish = [...gameSet].sort(() => 0.5 - Math.random());
+            shuffledEnglish.forEach(item => {
+                const btn = document.createElement('button');
+                btn.innerText = item.english;
+                btn.onclick = () => handleSelection('english', item.english, btn);
+                englishCol.appendChild(btn);
+            });
+        }
+
+        let selected = { german: null, english: null, germanEl: null, englishEl: null };
+
+        function handleSelection(type, id, element) {
+            if (selected[type + 'El']) selected[type + 'El'].style.backgroundColor = '';
+            
+            selected[type] = id;
+            selected[type + 'El'] = element;
+            element.style.backgroundColor = 'lightblue';
+
+            if (selected.german && selected.english) {
+                if (selected.german === selected.english) {
+                    selected.germanEl.style.visibility = 'hidden';
+                    selected.englishEl.style.visibility = 'hidden';
+                } else {
+                    alert("Try again");
+                    selected.germanEl.style.backgroundColor = '';
+                    selected.englishEl.style.backgroundColor = '';
+                }
+                selected = { german: null, english: null, germanEl: null, englishEl: null };
+            }
+        }
+    </script>
+</body>
+</html>
