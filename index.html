@@ -2,9 +2,16 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>German Vocabulary Game</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
     <style>
-        body { font-family: sans-serif; text-align: center; }
+        body { font-family: sans-serif; text-align: center; margin: 0; padding: 20px; }
         .stats { margin: 15px; font-weight: bold; }
         .game-container { display: flex; justify-content: center; gap: 50px; margin-top: 20px; }
         .col { display: flex; flex-direction: column; gap: 10px; width: 200px; }
@@ -27,6 +34,15 @@
     </div>
 
     <script>
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registered!', reg))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
+        }
+
         let vocabData = [];
         let score = 0, attempts = 0, seconds = 0, timerInterval;
         let selected = { german: null, english: null, germanEl: null, englishEl: null };
